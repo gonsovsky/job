@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\mt\Atoll.Transport.Client\Atoll.Transport.Client.csproj" />
+    <ProjectReference Include="..\..\mt\Atoll.UtilsBundle\Atoll.UtilsBundle.csproj" />
+  </ItemGroup>
+
+</Project>

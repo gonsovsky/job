@@ -1,0 +1,16 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+	<PackageReference Include="MongoDB.Driver" Version="2.10.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Atoll.Transport.ServerBundle\Atoll.Transport.ServerBundle.csproj" />
+    <ProjectReference Include="..\Atoll.UtilsBundle\Atoll.UtilsBundle.csproj" />
+  </ItemGroup>
+
+</Project>

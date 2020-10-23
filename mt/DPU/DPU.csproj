@@ -1,0 +1,32 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>netcoreapp2.1</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="DataReader\**" />
+    <Compile Remove="Linked\**" />
+    <EmbeddedResource Remove="DataReader\**" />
+    <EmbeddedResource Remove="Linked\**" />
+    <None Remove="DataReader\**" />
+    <None Remove="Linked\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="ProcessingService.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+	<PackageReference Include="MongoDB.Driver" Version="2.10.1" />
+	<PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Atoll.Transport.DataProcessing\Atoll.Transport.DataProcessing.csproj" />
+    <ProjectReference Include="..\Atoll.Transport.ServerBundle\Atoll.Transport.ServerBundle.csproj" />
+    <ProjectReference Include="..\Atoll.UtilsBundle\Atoll.UtilsBundle.csproj" />
+  </ItemGroup>
+
+</Project>

@@ -1,0 +1,28 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="..\Atoll.Transport.Client\Shared\ConfigurationRequestDataItem.cs" Link="_LINKED_\ConfigurationRequestDataItem.cs" />
+    <Compile Include="..\Atoll.Transport.Client\Shared\PacketFormDataItem.cs" Link="_LINKED_\PacketFormDataItem.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Atoll.Transport.ServerBundle\Atoll.Transport.ServerBundle.csproj" />
+    <ProjectReference Include="..\Atoll.UtilsBundle\Atoll.UtilsBundle.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+	<PackageReference Include="MongoDB.Driver" Version="2.10.1" />
+	<!--<PackageReference Include="Microsoft.AspNetCore.All" Version="2.0.9" />-->
+	<PackageReference Include="Microsoft.AspNetCore.Mvc.ViewFeatures" Version="2.0.4" />
+	<PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="_LINKED_\" />
+  </ItemGroup>
+
+</Project>

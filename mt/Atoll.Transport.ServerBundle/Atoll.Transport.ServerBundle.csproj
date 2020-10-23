@@ -1,0 +1,24 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="..\Atoll.Transport.Client\Shared\TransportConstants.cs" Link="_LINKED_\TransportConstants.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+	<PackageReference Include="MongoDB.Driver" Version="2.10.1" />
+	<PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="2.0.0" /> 
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="_LINKED_\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Atoll.UtilsBundle\Atoll.UtilsBundle.csproj" />
+  </ItemGroup>
+
+</Project>

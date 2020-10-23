@@ -1,0 +1,32 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="..\Atoll.Transport.Client\Shared\ConfigurationRequestDataItem.cs" Link="Linked\ConfigurationRequestDataItem.cs" />
+    <Compile Include="..\Atoll.Transport.Client\Shared\PacketFormDataItem.cs" Link="Linked\PacketFormDataItem.cs" />
+    <Compile Include="..\Atoll.Transport.Client\Shared\TransportConstants.cs" Link="Linked\TransportConstants.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Linked\" />
+    <Folder Include="Middleware\" />
+    <Folder Include="wwwroot\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.All" Version="2.0.9" />
+	<PackageReference Include="MongoDB.Driver" Version="2.10.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <DotNetCliToolReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Tools" Version="2.0.4" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Atoll.UtilsBundle\Atoll.UtilsBundle.csproj" />
+  </ItemGroup>
+
+</Project>
