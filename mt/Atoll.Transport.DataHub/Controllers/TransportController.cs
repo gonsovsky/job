@@ -8,6 +8,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Atoll.Transport;
 using Atoll.Transport.Contract;
+using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Atoll.Transport.DataHub
@@ -127,6 +128,7 @@ namespace Atoll.Transport.DataHub
             var headers = ctx.MessageHeaders;
             var dbTokenData = ctx.CurrentDbTokenData;
 
+            headers.DbToken = "dbTOken";
             // при изменении токена надо конфиги по-новой
             IReadOnlyCollection<ConfigurationRequestDataItem> configurationsOnAgent = new List<ConfigurationRequestDataItem>();
             if (headers.DbToken != dbTokenData.DbToken)
@@ -161,6 +163,7 @@ namespace Atoll.Transport.DataHub
         [DisableRequestSizeLimit]
         public async Task<IActionResult> Exchange()
         {
+            Console.WriteLine(Request.GetDisplayUrl());
             // получаем информацию заголовков (по ним мы как правило можем определить нужно ли получать тело)
             var messageHeaders = packageRequestParser.GetHeaders(this.Request);
 
@@ -168,6 +171,7 @@ namespace Atoll.Transport.DataHub
             // TODO при перезагрузке конфига и токена не возникнут ли зависоны??
             var configData = this.GetCurrentConfigData(messageHeaders);
 
+            messageHeaders.ConfigToken = "temp";
             // если поменялась "статическая" конфигурация, то не принимаем информацию, а просим агента сходить за новой и применить её
             // статическую конфигурацию обрабатываем отдельно, чтобы была возможность отключить часть функционала на агенте, без отрабатывания сообщений с агента
             if (messageHeaders.ConfigToken != configData.ConfigToken)
@@ -182,7 +186,7 @@ namespace Atoll.Transport.DataHub
                 return this.Ok(new TransportResponse().SetStaticConfigChanged(configData));
             }
 
-            Thread.Sleep(10000);
+            Thread.Sleep(100);
             // ид для ограничивающей очереди сообщений с агентов
             var queueId = messageHeaders.GetAgentId();
             // нужно прийти позже (или нужно добавить в обработку)

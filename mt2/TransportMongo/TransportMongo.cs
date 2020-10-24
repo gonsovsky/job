@@ -1,10 +1,13 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Drawing;
 using System.IO;
+using System.Text;
 using System.Threading;
 using Atoll.Transport.Client.Bundle;
 using Atoll.Transport.Client.Contract;
 using Coral.Atoll.Utils;
+using Newtonsoft.Json;
 
 namespace TransportMongo
 {
@@ -13,6 +16,8 @@ namespace TransportMongo
         public ITransportClient TransportClient;
         public ITransportSenderWorker SenderWorker;
         private readonly PacketManager _packetManager;
+
+        public event Action<int> OnSent;
 
         public TransportMongo(string tempDir, string url)
         {
@@ -41,12 +46,35 @@ namespace TransportMongo
             confStore.Subscribe(new TestOnConfigUpdate());
             this.SenderWorker = new TransportSenderWorker(_packetManager, agentInfoService, confStore, url, transportSettings, new SendStateStore());
             CancellationTokenSource cs = new CancellationTokenSource();
-            this.SenderWorker.Process();
         }
 
         public void Dispose()
         {
             this._packetManager?.Dispose();
+        }
+
+        public void SendMessage(int itemId, string queueName, Stream data)
+        {
+            using (var writer = TransportClient.CreateWriter(queueName, CommitOptions.None))
+            {
+                writer.Write(ReadFully(data));
+            }
+            this.SenderWorker.Process();
+            OnSent?.Invoke(itemId);
+        }
+
+        public static byte[] ReadFully(Stream input)
+        {
+            byte[] buffer = new byte[16 * 1024];
+            using (MemoryStream ms = new MemoryStream())
+            {
+                int read;
+                while ((read = input.Read(buffer, 0, buffer.Length)) > 0)
+                {
+                    ms.Write(buffer, 0, read);
+                }
+                return ms.ToArray();
+            }
         }
     }
 }

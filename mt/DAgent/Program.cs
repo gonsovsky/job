@@ -47,6 +47,7 @@ namespace D_Agent
                 }
             };
             string url = "http://192.168.100.184:5001/dhu/transport/exchange";
+            //string url = "http://localhost:5001/dhu/transport/exchange";
             var agentInfoService = new TransportAgentInfoService(new RealComputerIdentityProvider());
             this.transportClient = new TransportClient(agentInfoService, packetManager);           
             var cnfsDir = Path.Combine(tempDir, "conf");

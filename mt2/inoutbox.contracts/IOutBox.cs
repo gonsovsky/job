@@ -1,24 +1,35 @@
-﻿using System.IO;
+﻿using System.Collections.Generic;
+using System.IO;
 
 namespace InOutBox.Contracts
 {
+
     public interface IOutBox
     {
-        int Add(string topic = "");
+        int Add(string extra = "");
 
-        FileStream Write(int messageId);
+        FileStream AddWrite(int itemId);
 
-        void Commit(int messageId);
+        void AddCommit(int itemId);
 
-        void Rollback(int messageId);
+        void AddRollback(int itemId);
+
+        event ItemDelegete OnNewItem;
+
+        Stream Read(int itemId);
+
+        void Send(int itemId);
+
+        void Deliver(int itemId);
+
+        void Fault(int itemId);
+
+        IEnumerable<int> All();
+
+        IEnumerable<int> Unsent();
+
+        IEnumerable<int> Sent();
     }
 
-    public interface IOutBoxTransport
-    {
-        Stream Read(int messageId);
-
-        void Send(int messageId);
-
-        void Deliver(int messageId);
-    }
+    public delegate void ItemDelegete(string queue, int itemId);
 }
