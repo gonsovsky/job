@@ -4,9 +4,9 @@ namespace InOutBox.Implementation
 {
     public class Storage: IStorage
     {
-        public IOutBox GetOutBox(string queue)
+        public IOutBox GetOutBox(string queue, int priority)
         {
-            return new OutBox(queue);
+            return new OutBox(queue, priority);
         }
     }
 }

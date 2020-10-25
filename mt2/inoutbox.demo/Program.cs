@@ -15,9 +15,9 @@ namespace InOutBox.Demo
         static void Main(string[] args)
         {
             var storage = new Storage();
-            var outbox = (OutBox)storage.GetOutBox(
-                Config.QueueName);
-            outbox.Init(Config.StorageFolder, Config.ConStr, Config.DbFile);
+            var outbox = storage.GetOutBox(
+                Config.QueueName, 1);
+            ((OutBox)outbox).Init(Config.StorageFolder, Config.ConStr, Config.DbFile);
 
             var transportMongo = new TransportMongo.TransportMongo(
                 Config.TransportFolder,
@@ -26,15 +26,15 @@ namespace InOutBox.Demo
 
             transportMongo.OnSent += (int itemId) =>
             {
-                outbox.Send(itemId);
-                Console.Write($"Sent items:{string.Join(",", outbox.Sent().Select(x => x.ToString()))}\n");
+                outbox.Send(new OutItem(){Id=itemId});
+                Console.Write($"Sent items:{string.Join(",", outbox.Sent().Select(x => x.Id.ToString()))}\n");
             };
 
-            outbox.OnNewItem += (string queue, int itemId) =>
+            outbox.OnAddItem += (string queue, IOutItem item) =>
             {
-                Console.Write($"Outgoing items:{string.Join(",", outbox.Unsent().Select(x => x.ToString()))}\n");
-                var itemStream = outbox.Read(itemId);
-                transportMongo.SendMessage(itemId, queue, itemStream);
+                Console.Write($"Outgoing items:{string.Join(",", outbox.Unsent().Select(x => x.Id.ToString()))}\n");
+                var itemStream = outbox.Read(item);
+                transportMongo.SendMessage(item.Id, queue, itemStream);
             };
 
             var newId = outbox.Add("-");

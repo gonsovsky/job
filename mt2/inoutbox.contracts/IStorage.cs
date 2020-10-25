@@ -2,6 +2,6 @@
 {
     public interface IStorage
     {
-        IOutBox GetOutBox(string queue);
+        IOutBox GetOutBox(string queue, int priority);
     }
 }

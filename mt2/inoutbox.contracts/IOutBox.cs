@@ -3,33 +3,34 @@ using System.IO;
 
 namespace InOutBox.Contracts
 {
-
     public interface IOutBox
     {
-        int Add(string extra = "");
+        IOutItem Add(string extra = "");
 
-        FileStream AddWrite(int itemId);
+        FileStream AddWrite(IOutItem item);
 
-        void AddCommit(int itemId);
+        void AddCommit(IOutItem item);
 
-        void AddRollback(int itemId);
+        void AddRollback(IOutItem item);
 
-        event ItemDelegete OnNewItem;
+        event ItemDelegete OnAddItem;
 
-        Stream Read(int itemId);
+        Stream Read(IOutItem item);
 
-        void Send(int itemId);
+        void Send(IOutItem item);
 
-        void Deliver(int itemId);
+        void Deliver(IOutItem item);
 
-        void Fault(int itemId);
+        void Fault(IOutItem item);
 
-        IEnumerable<int> All();
+        IEnumerable<IOutItem> All();
 
-        IEnumerable<int> Unsent();
+        IEnumerable<IOutItem> Unsent();
 
-        IEnumerable<int> Sent();
+        IEnumerable<IOutItem> Sent();
+
+        void Clean(bool createnew = true);
     }
 
-    public delegate void ItemDelegete(string queue, int itemId);
+    public delegate void ItemDelegete(string queue, IOutItem item);
 }
