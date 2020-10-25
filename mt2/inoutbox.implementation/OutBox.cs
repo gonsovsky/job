@@ -11,6 +11,7 @@ namespace InOutBox.Implementation
 {
     public class OutBox: IOutBox
     {
+        #region members
         protected string StorageFolder;
 
         protected string DbFile;
@@ -20,6 +21,7 @@ namespace InOutBox.Implementation
         protected string Queue;
 
         protected SQLiteConnection SqlConn;
+        #endregion
 
         public OutBox(string queue)
         {
@@ -51,52 +53,6 @@ namespace InOutBox.Implementation
                        retried INTEGER
                     );
                ";
-            cmd.ExecuteNonQuery();
-        }
-
-        public int Add(string extra)
-        {
-            var cmd = SqlConn.CreateCommand();
-            cmd.CommandText =
-                @"
-                   Insert into items (queue,extra) values  (@queue,@extra);
-                   select last_insert_rowid();
-               ";
-            cmd.Parameters.Add("queue", DbType.String).Value = Queue;
-            cmd.Parameters.Add("extra", DbType.String).Value = extra;
-            var id = (int)(Int64)cmd.ExecuteScalar();
-            return id;
-        }
-
-        private void SetFlag(int itemId, string flag)
-        {
-            var cmd = SqlConn.CreateCommand();
-            cmd.CommandText =
-                $@"
-                   Update items set {flag} = julianday('now') where id =  @id
-               ";
-            cmd.Parameters.Add("id", DbType.UInt32).Value = itemId;
-            cmd.ExecuteNonQuery();
-        }
-
-        public void AddCommit(int itemId)
-        {
-            this.SetFlag(itemId, "commited");
-            this.OnNewItem?.Invoke(this.Queue, itemId);
-        }
-
-        public void AddRollback(int itemId)
-        {
-            var filename = ItemFile(itemId);
-            if (File.Exists(filename))
-                File.Delete(filename);
-
-            var cmd = SqlConn.CreateCommand();
-            cmd.CommandText =
-                @"
-                   delete from items where id =  @id
-               ";
-            cmd.Parameters.Add("id", DbType.UInt32).Value = itemId;
             cmd.ExecuteNonQuery();
         }
 
@@ -142,29 +98,6 @@ namespace InOutBox.Implementation
             }
         }
 
-        public string ItemFile(int itemId) =>
-            Path.Combine(StorageFolder, itemId.ToString() + ".txt");
-
-        public FileStream AddWrite(int itemId)
-        {
-            var filename = ItemFile(itemId);
-            if (File.Exists(filename))
-                File.Delete(filename);
-            return new FileStream(
-                filename,
-                FileMode.CreateNew
-            );
-        }
-
-        public Stream Read(int itemId)
-        {
-            var filename = ItemFile(itemId);
-            return new FileStream(
-                filename,
-                FileMode.Open
-            );
-        }
-
         public void Send(int itemId)
         {
             SetFlag(itemId, "sent");
@@ -180,6 +113,77 @@ namespace InOutBox.Implementation
             SetFlag(itemId, "faulted");
         }
 
+        public int Add(string extra)
+        {
+            var cmd = SqlConn.CreateCommand();
+            cmd.CommandText =
+                @"
+                   Insert into items (queue,extra) values  (@queue,@extra);
+                   select last_insert_rowid();
+               ";
+            cmd.Parameters.Add("queue", DbType.String).Value = Queue;
+            cmd.Parameters.Add("extra", DbType.String).Value = extra;
+            var id = (int)(Int64)cmd.ExecuteScalar();
+            return id;
+        }
+
+        public FileStream AddWrite(int itemId)
+        {
+            var filename = ItemFile(itemId);
+            if (File.Exists(filename))
+                File.Delete(filename);
+            return new FileStream(
+                filename,
+                FileMode.CreateNew
+            );
+        }
+
+        public void AddCommit(int itemId)
+        {
+            this.SetFlag(itemId, "commited");
+            this.OnNewItem?.Invoke(this.Queue, itemId);
+        }
+
+        public void AddRollback(int itemId)
+        {
+            var filename = ItemFile(itemId);
+            if (File.Exists(filename))
+                File.Delete(filename);
+
+            var cmd = SqlConn.CreateCommand();
+            cmd.CommandText =
+                @"
+                   delete from items where id =  @id
+               ";
+            cmd.Parameters.Add("id", DbType.UInt32).Value = itemId;
+            cmd.ExecuteNonQuery();
+        }
+
         public event ItemDelegete OnNewItem;
+
+        public Stream Read(int itemId)
+        {
+            var filename = ItemFile(itemId);
+            return new FileStream(
+                filename,
+                FileMode.Open
+            );
+        }
+
+        #region private methods
+        public string ItemFile(int itemId) =>
+            Path.Combine(StorageFolder, itemId.ToString() + ".txt");
+
+        private void SetFlag(int itemId, string flag)
+        {
+            var cmd = SqlConn.CreateCommand();
+            cmd.CommandText =
+                $@"
+                   Update items set {flag} = julianday('now') where id =  @id
+               ";
+            cmd.Parameters.Add("id", DbType.UInt32).Value = itemId;
+            cmd.ExecuteNonQuery();
+        }
+        #endregion
     }
 }
