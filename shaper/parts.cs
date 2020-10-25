@@ -10,7 +10,6 @@ namespace shaper
     {
         public static void LinkAll(this List<Part> parts)
         {
-            var plain = parts.Plain();
             for (int i = plain.Count - 1; i >= 0; i--)
                 plain[i].Mother = plain;
             var servers = plain.Where(a => a is Server).ToArray();
