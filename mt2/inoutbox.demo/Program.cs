@@ -14,14 +14,20 @@ namespace InOutBox.Demo
     {
         static void Main(string[] args)
         {
-            var storage = new Storage();
-            var outbox = storage.GetOutBox(
-                Config.QueueName, 1);
-            ((OutBox)outbox).Init(Config.StorageFolder, Config.ConStr, Config.DbFile);
+            var svcStorage = new StorageSvc();
+            var outbox = svcStorage.GetOutBox(
+                ProgramConfig.QueueName, ProgramConfig.DefaultPriority);
+            outbox.Init(
+                new Config()
+                {
+                    StorageFolder = ProgramConfig.StorageFolder,
+                    ConStr = ProgramConfig.ConStr,
+                    DbFile = ProgramConfig.DbFile
+                });
 
             var transportMongo = new TransportMongo.TransportMongo(
-                Config.TransportFolder,
-                Config.TransportUrl
+                ProgramConfig.TransportFolder,
+                ProgramConfig.TransportUrl
             );
 
             transportMongo.OnSent += (int itemId) =>
@@ -37,21 +43,21 @@ namespace InOutBox.Demo
                 transportMongo.SendMessage(item.Id, queue, itemStream);
             };
 
-            var newId = outbox.Add("-");
+            var newItem = outbox.Add("-");
             try
             {
-                using (var msgStream = outbox.AddWrite(newId))
+                using (var msgStream = outbox.AddWrite(newItem))
                 {
                     using (var biosStream = SmBiosExtractor.OpenRead())
                     {
                         biosStream.CopyTo(msgStream);
                     }
                 }
-                outbox.AddCommit(newId);
+                outbox.AddCommit(newItem);
             }
             catch (Exception)
             {
-                outbox.AddRollback(newId);
+                outbox.AddRollback(newItem);
             }
 
             Console.ReadLine();

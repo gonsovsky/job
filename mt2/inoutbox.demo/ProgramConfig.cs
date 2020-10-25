@@ -5,7 +5,7 @@ using System.Text;
 
 namespace InOutBox.Demo
 {
-    public static class Config
+    public static class ProgramConfig
     {
         public static readonly string StorageFolder = @"C:/_temp/";
         public static readonly string TransportFolder = Path.Combine(StorageFolder, "transport");
@@ -14,5 +14,6 @@ namespace InOutBox.Demo
         public static readonly string QueueName = "testProvider";
         public static readonly string DbFile = Path.Combine(StorageFolder, "outbox.db3");
         public static readonly string ConStr = $@"Data Source={DbFile};Version=3;New=False;Compress=True;";
+        public static readonly int DefaultPriority = 1;
     }
 }

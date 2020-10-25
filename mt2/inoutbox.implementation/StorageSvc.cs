@@ -2,7 +2,7 @@
 
 namespace InOutBox.Implementation
 {
-    public class Storage: IStorage
+    public class StorageSvc: IStorageSvc
     {
         public IOutBox GetOutBox(string queue, int priority)
         {

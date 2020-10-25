@@ -30,11 +30,11 @@ namespace InOutBox.Implementation
             this.Priority = priority;
         }
 
-        public void Init(string storageFolder, string conStr, string dbFile)
+        public void Init(IConfig cfg)
         {
-            this.StorageFolder = Path.Combine(storageFolder, "attachments");
-            this.ConStr = conStr;
-            this.DbFile = dbFile;
+            this.StorageFolder = Path.Combine(cfg.StorageFolder, "attachments");
+            this.ConStr = cfg.ConStr;
+            this.DbFile = cfg.DbFile;
             if (Directory.Exists(this.StorageFolder) == false)
                 Directory.CreateDirectory(this.StorageFolder);
             Open();

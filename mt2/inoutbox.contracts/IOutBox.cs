@@ -5,6 +5,8 @@ namespace InOutBox.Contracts
 {
     public interface IOutBox
     {
+        void Init(IConfig cfg);
+
         IOutItem Add(string extra = "");
 
         FileStream AddWrite(IOutItem item);
