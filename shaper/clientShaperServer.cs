@@ -11,6 +11,7 @@ namespace shaper
         public override void Serve()
         {
             base.Serve();
+            Log($"{MyName} --> {NextName}: {Request}");
             ClientPartner.SendPartial(Request);
         }
     }

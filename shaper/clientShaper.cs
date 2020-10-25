@@ -9,12 +9,14 @@ namespace shaper
     {
         public List<Part> Parts;
 
-        protected ClientShaper()
+        public override string Name { get; set; } = "Клиент";
+
+        public ClientShaper()
         {
             Parts = new List<Part>()
             {
-                new ClientShaperServer(){Name = Name + ".Приемник"},
-                new ClientShaperClient(){Name = Name + ".Отдатчик"}
+                new ClientShaperServer(){SingleRequesed = true, Name = Name + ".ШейпСрв"},
+                new ClientShaperClient(){Name = Name + ".ШейпКли"}
             };
             ((ClientShaperServer) Parts[0]).ClientPartner = ((ClientShaperClient) Parts[1]);
         }

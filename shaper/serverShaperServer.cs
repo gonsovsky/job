@@ -1,18 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Text;
 using System.Threading;
 
 namespace shaper
 {
-    public class Server: Part
+    public class ServerShaperServer: Server
     {
-        public bool SingleRequesed = false;
-        public override string Name { get; set; } = "Сервер";
+        public Dictionary<int, string> Data=new Dictionary<int, string>();
 
-        public string Request;
+        public ServerShaperClient ClientPartner;
 
         public override void Serve()
         {
@@ -28,10 +28,15 @@ namespace shaper
 
             while (true)
             {
-                // Note: The GetContext method blocks while waiting for a request.
                 HttpListenerContext context = listener.GetContext();
 
                 HttpListenerRequest request = context.Request;
+
+                var q = request.RawUrl.Contains("first=true");
+
+                var d = System.Web.HttpUtility.ParseQueryString(request.RawUrl);
+                var packetNo = int.Parse(d["/?packetNo"]);
+                var totalPacket = int.Parse(d["packetTotal"]);
 
                 using (Stream receiveStream = request.InputStream)
                 {
@@ -41,18 +46,12 @@ namespace shaper
                     }
                 }
 
-                try
-                {
-                    System.IO.File.WriteAllText("C://_temp2/2.txt", Request);
-                }
-                catch (Exception e)
-                {
-                    // ignored
-                }
+                Data[packetNo] = Request;
 
-               
+                Log($"{MyName} <-- {PrevName}: {Request} [packet: {packetNo}/{totalPacket}]");
+
                 HttpListenerResponse response = context.Response;
-              
+
                 string responseString = "OK";
                 byte[] buffer = System.Text.Encoding.UTF8.GetBytes(responseString);
                 response.ContentLength64 = buffer.Length;
@@ -60,10 +59,21 @@ namespace shaper
                 output.Write(buffer, 0, buffer.Length);
                 output.Close();
                 //Log($"{MyName} --> {PrevName}: {responseString}");
-                if (!SingleRequesed)
-                    Log("Done.");
                 if (SingleRequesed)
                     break;
+
+                if (Data.Count == totalPacket)
+                {
+                    var finalData = "";
+                    Data.OrderBy(x => x.Key);
+                    foreach (var value in Data.Values)
+                    {
+                        finalData += value;
+                    }
+                    Log($"{MyName} --> {NextName}: {finalData}");
+                    ClientPartner.ServerContent = finalData;
+                    break;
+                }
             }
             listener.Stop();
         }

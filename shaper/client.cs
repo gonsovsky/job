@@ -15,21 +15,27 @@ namespace shaper
 
         public override async void Serve()
         {
-            DoSend(BaseContent);
+            DoSend(Program.BaseContent);
         }
 
-        protected async void DoSend(string data)
+        protected async void DoSend(string data, int packetNo =0, int totalPacket=0)
         {
             if (_sent)
                 return;
-            Log($"{MyName} --> {NextName}: {data}");
+            if (packetNo != 0)
+            {
+                Log($"{MyName} --> {NextName}: {data} [packet: {packetNo}/{totalPacket}]");
+
+            }
+            else
+                Log($"{MyName} --> {NextName}: {data}");
             try
             {
                 var client = new HttpClient
                 {
-                    Timeout = new TimeSpan(0, 0, 1)
+                    Timeout = new TimeSpan(0, 0, 0,Part.Delay)
                 };
-                var response = await client.PostAsync($"http://localhost:{MyPort}",
+                var response = await client.PostAsync($"http://localhost:{MyPort}?packetNo={packetNo}&packetTotal={totalPacket}",
                     new StringContent(data, Encoding.UTF8, "application/json"));
                 var contents = await response.Content.ReadAsStringAsync();
                 _sent = true;
@@ -38,7 +44,7 @@ namespace shaper
             }
             catch (Exception e)
             {
-                Console.WriteLine(e.Message);
+              //  Console.WriteLine(e.Message);
                 this.Serve();
             }
         }
