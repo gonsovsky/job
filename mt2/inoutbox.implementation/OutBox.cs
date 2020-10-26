@@ -46,8 +46,8 @@ namespace InOutBox.Implementation
         {
             var cmd = SqlConn.CreateCommand();
             cmd.CommandText =
-                @"
-                   select id, priority from items;
+                $@"
+                   select {Cols.Id}, {Cols.Priority} from items;
                ";
             var rd = cmd.ExecuteReader();
             while (rd.Read())
@@ -60,8 +60,8 @@ namespace InOutBox.Implementation
         {
             var cmd = SqlConn.CreateCommand();
             cmd.CommandText =
-                @"
-                   select id, priority from items where sent is null;
+                $@"
+                   select {Cols.Id}, {Cols.Priority} from items where {Cols.Sent}  is null;
                ";
             var rd = cmd.ExecuteReader();
             while (rd.Read())
@@ -74,8 +74,8 @@ namespace InOutBox.Implementation
         {
             var cmd = SqlConn.CreateCommand();
             cmd.CommandText =
-                @"
-                   select id, priority from items where not sent is null;
+                $@"
+                   select {Cols.Id}, {Cols.Priority} from items where not {Cols.Sent}  is null;
                ";
             var rd = cmd.ExecuteReader();
             while (rd.Read())
@@ -97,17 +97,17 @@ namespace InOutBox.Implementation
         #region Status of Item
         public void Send(IOutItem item)
         {
-            SetFlag(item, "sent");
+            SetFlag(item, Cols.Sent);
         }
 
         public void Deliver(IOutItem item)
         {
-            SetFlag(item, "delivered");
+            SetFlag(item, Cols.Delivered);
         }
 
         public void Fault(IOutItem item)
         {
-            SetFlag(item, "faulted");
+            SetFlag(item, Cols.Faulted);
         }
 
         private void SetFlag(IOutItem item, string flag)
@@ -115,9 +115,9 @@ namespace InOutBox.Implementation
             var cmd = SqlConn.CreateCommand();
             cmd.CommandText =
                 $@"
-                   Update items set {flag} = julianday('now') where id =  @id
+                   Update items set {flag} = julianday('now') where {Cols.Id} =  @{Cols.Id}
                ";
-            cmd.Parameters.Add("id", DbType.UInt32).Value = item.Id;
+            cmd.Parameters.Add(Cols.Id, DbType.UInt32).Value = item.Id;
             cmd.ExecuteNonQuery();
         }
 
@@ -136,13 +136,13 @@ namespace InOutBox.Implementation
         {
             var cmd = SqlConn.CreateCommand();
             cmd.CommandText =
-                @"
-                   Insert into items (queue,extra,created,priority) values  (@queue,@extra,julianday('now'),@priority);
+                $@"
+                   Insert into items ({Cols.Queue},{Cols.Extra},{Cols.Created},{Cols.Priority}) values  (@{Cols.Queue},@{Cols.Extra},julianday('now'),@{Cols.Priority});
                    select last_insert_rowid();
                ";
-            cmd.Parameters.Add("queue", DbType.String).Value = Queue;
-            cmd.Parameters.Add("extra", DbType.String).Value = extra;
-            cmd.Parameters.Add("priority", DbType.Int32).Value = Priority;
+            cmd.Parameters.Add($"{Cols.Queue}", DbType.String).Value = Queue;
+            cmd.Parameters.Add($"{Cols.Extra}", DbType.String).Value = extra;
+            cmd.Parameters.Add($"{Cols.Priority}", DbType.Int32).Value = Priority;
             var id = (int)(Int64)cmd.ExecuteScalar();
             return new OutItem() {Id = id, Priority = Priority};
         }
@@ -160,7 +160,7 @@ namespace InOutBox.Implementation
 
         public void AddCommit(IOutItem item)
         {
-            this.SetFlag(item, "commited");
+            this.SetFlag(item, Cols.Commited);
             this.OnAddItem?.Invoke(this.Queue, item);
         }
 
@@ -172,10 +172,10 @@ namespace InOutBox.Implementation
 
             var cmd = SqlConn.CreateCommand();
             cmd.CommandText =
-                @"
-                   delete from items where id =  @id
+                $@"
+                   delete from items where {Cols.Id}  =  @{Cols.Id} 
                ";
-            cmd.Parameters.Add("id", DbType.UInt32).Value = item.Id;
+            cmd.Parameters.Add(Cols.Id, DbType.UInt32).Value = item.Id;
             cmd.ExecuteNonQuery();
         }
         #endregion publish new Item
@@ -183,7 +183,21 @@ namespace InOutBox.Implementation
         #region Database maintaince
         public const string DbVersion = "1.3";
 
-        public void Clean(bool createnew = true)
+        public static class Cols
+        {
+            public const string Id = "id";
+            public const string Queue = "queue";
+            public const string Priority = "priority";
+            public const string Extra = "extra";
+            public const string Created = "created";
+            public const string Commited = "commited";
+            public const string Sent = "sent";
+            public const string Delivered = "delivered";
+            public const string Faulted = "faulted";
+            public const string Retried = "retried";
+        }
+
+       public void Clean(bool createnew = true)
         {
             SqlConn?.Close();
             DirectoryInfo di = new DirectoryInfo(StorageFolder);
@@ -213,16 +227,16 @@ namespace InOutBox.Implementation
                     Insert into dblease (version, date) values ('{DbVersion}',julianday('now'));                    
 
                     CREATE TABLE items (
-                       id INTEGER PRIMARY KEY AUTOINCREMENT,
-                       queue TEXT NOT NULL,
-                       priority INTEGER,
-                       extra TEXT NOT NULL,
-                       created real,
-                       commited real,
-                       sent real,
-                       delivered real,
-                       faulted real,
-                       retried INTEGER
+                       {Cols.Id} INTEGER PRIMARY KEY AUTOINCREMENT,
+                       {Cols.Queue} TEXT NOT NULL,
+                       {Cols.Priority} INTEGER,
+                       {Cols.Extra} TEXT NOT NULL,
+                       {Cols.Created} real,
+                       {Cols.Commited}  real,
+                       {Cols.Sent}  real,
+                       {Cols.Delivered} real,
+                       {Cols.Faulted} real,
+                       {Cols.Retried} INTEGER
                     );
                ";
             cmd.ExecuteNonQuery();

@@ -1,6 +1,7 @@
-var ReactDOM = require('react-dom');
-var React = require('react');
-var FiasList = require('./components/fiasList.jsx');
+//import React from 'react';
+//import ReactDOM from 'react-dom';
+//import FiasList from 'components/fiasList';
+import FiasList from 'components/navBar';
 
-ReactDOM.render( <FiasList/> ,
+ReactDOM.render( <div/> ,
     document.getElementById("root"))

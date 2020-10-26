@@ -1,10 +1,13 @@
-var React = require('react');
-var FilterBox = require('./filterBox.jsx');
-var NewBox = require('./newBox.jsx');
-var Fias = require('./fias.jsx');
-var NavBar = require('./navBar.jsx');
+import React from 'react'
+// import FilterBox from 'filterBox'
+// import NewBox from 'newBox'
+import Fias from 'fias'
+//var FilterBox = require('./filterBox.jsx');
+//var NewBox = require('./newBox.jsx');
+//var Fias = require('./fias.jsx');
+//var NavBar = require('./navBar.jsx');
 
-class FiasList extends React.Component {
+export default class FiasList extends React.Component {
     constructor(props){
         super(props);
         this.fiasList = this.fiasList.bind(this);
@@ -37,8 +40,7 @@ class FiasList extends React.Component {
         if (!this.state || !this.state.fias)
             return <h2>Loading...</h2>
         return(
-            <div>
-                <NavBar></NavBar>
+            <div> <h2>Hello!</h2>
                 <table>
                     <tr>
                         <td>
@@ -65,5 +67,3 @@ class FiasList extends React.Component {
         </div>);
     }
 }
-
-module.exports =  FiasList;

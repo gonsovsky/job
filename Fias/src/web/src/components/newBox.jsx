@@ -1,6 +1,6 @@
-var React = require('react');
+import React from 'react'
 
-class NewBox extends React.Component{
+export default class NewBox extends React.Component{
 
     constructor(props){
         super(props);
@@ -19,5 +19,3 @@ class NewBox extends React.Component{
         </div> ;
     }
 }
-
-module.exports = NewBox;

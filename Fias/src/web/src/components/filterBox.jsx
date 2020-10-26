@@ -1,6 +1,6 @@
-var React = require('react');
+import React from 'react'
 
-class FilterBox extends React.Component{
+export default class FilterBox extends React.Component{
 
     constructor(props){
         super(props);
@@ -16,5 +16,3 @@ class FilterBox extends React.Component{
         return <input placeholder="Поиск" onChange={this.onTextChanged} />;
     }
 }
-
-module.exports =  FilterBox;

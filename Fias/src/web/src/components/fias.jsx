@@ -1,6 +1,6 @@
-var React = require('react');
+import React from 'react';
 
-class Fias extends React.Component{
+export default class Fias extends React.Component{
 
     constructor(props){
         super(props);
@@ -23,5 +23,3 @@ class Fias extends React.Component{
 
     }
 }
-
-module.exports =  Fias;
