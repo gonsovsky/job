@@ -15,8 +15,8 @@ namespace shaper
         {
             Parts = new List<Part>()
             {
-                new ClientShaperServer(){SingleRequesed = true, Name = Name + ".ШейпСрв"},
-                new ClientShaperClient(){Name = Name + ".ШейпКли"}
+                new ClientShaperServer(){SingleRequesed = true, Name="Концентратор"},
+                new ClientShaperClient(){Name="Диспенсер"}
             };
             ((ClientShaperServer) Parts[0]).ClientPartner = ((ClientShaperClient) Parts[1]);
         }
